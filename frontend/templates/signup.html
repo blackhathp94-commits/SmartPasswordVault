@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="post" class="row g-3">
+  <div class="col-12">
+    <label class="form-label text-white fw-bold">Username</label>
+    <input name="username" class="form-control" placeholder="yourname" required>
+  </div>
+  <div class="col-12">
+    <label class="form-label text-white fw-bold">Password</label>
+    <input type="password" name="password" class="form-control" placeholder="min 6 chars" minlength=6 required>
+  </div>
+  <div class="col-12 d-flex justify-content-between">
+    <button class="btn btn-primary fw-bold">Sign Up</button>
+    <a href="{{ url_for('login') }}">Have an account? Log in →</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h4 class="text-white fw-bold mb-3">Add Bank Information</h4>
+
+<form method="POST">
+
+    <label class="form-label text-white">Bank Name</label>
+    <input type="text" name="bank_name" class="form-control" required>
+
+    <label class="form-label text-white mt-3">Account Number</label>
+    <input type="text" name="account_number" class="form-control" required>
+
+    <label class="form-label text-white mt-3">IFSC</label>
+    <input type="text" name="ifsc" class="form-control" required>
+
+    <label class="form-label text-white mt-3">Branch</label>
+    <input type="text" name="branch" class="form-control">
+
+    <label class="form-label text-white mt-3">Note</label>
+    <input type="text" name="note" class="form-control">
+
+    <button class="btn btn-primary mt-3 w-100">Save</button>
+
+</form>
+
+{% endblock %}

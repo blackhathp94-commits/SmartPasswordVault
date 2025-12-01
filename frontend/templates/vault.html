@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- 🔥 HAMBURGER MENU + SIDEBAR -->
+<button class="hamburger-btn" onclick="toggleMenu()">☰</button>
+
+<div id="sidebar" class="sidebar">
+    <h5 class="text-white fw-bold mb-3">Menu</h5>
+
+    <a href="{{ url_for('vault') }}" class="menu-link">🔐 Password Vault</a>
+    <a href="{{ url_for('credit_cards') }}" class="menu-link">💳 Credit Cards</a>
+    <a href="{{ url_for('documents') }}" class="menu-link">📄 Documents</a>
+    <a href="{{ url_for('bank_info') }}" class="menu-link">🏦 Bank Information</a>
+
+    <hr class="text-light">
+    <button class="close-btn btn btn-danger btn-sm" onclick="toggleMenu()">Close</button>
+</div>
+
+<style>
+    /* Hamburger Button */
+    .hamburger-btn {
+        position: fixed;
+        top: 5px;
+        left: 5px;
+        z-index: 2000;
+        background: #0d6efd;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 20px;
+        border-radius: 4px;
+    }
+
+    .hamburger-btn.hide {
+        display: none;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        height: 100%;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: -260px;
+        background-color: #1c1f24;
+        padding: 20px;
+        transition: left 0.3s ease;
+        z-index: 1500;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .menu-link {
+        display: block;
+        padding: 10px 0;
+        color: #d4d4d4;
+        text-decoration: none;
+    }
+
+    .menu-link:hover {
+        color: white;
+    }
+</style>
+
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0 text-white fw-bold">Saved Passwords</h5>
+    <a class="btn btn-primary" href="{{ url_for('add_entry') }}">＋ Add</a>
+</div>
+
+{% if entries %}
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th class="fw-bold text-dark">Site / App</th>
+                <th class="fw-bold text-dark">Login</th>
+                <th class="fw-bold text-dark">Password</th>
+                <th class="fw-bold text-dark">Note</th>
+                <th class="fw-bold text-dark">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for e in entries %}
+            <tr>
+                <td>{{ e['site'] }}</td>
+
+                <td>
+                    <span id="login-{{ e['id'] }}">{{ e['login'] }}</span>
+                </td>
+
+                <td>
+                    <span id="pw-{{ e['id'] }}" data-revealed="false">••••••••</span>
+                </td>
+
+                <td>{{ e['note'] or '' }}</td>
+
+                <td class="d-flex gap-2">
+                    <!-- Edit Button -->
+                    <a class="btn btn-sm btn-warning"
+                       href="{{ url_for('edit_entry', entry_id=e['id']) }}">
+                        ✏️ Edit
+                    </a>
+
+                    <!-- Reveal Password -->
+                    <button id="reveal-{{ e['id'] }}" class="btn btn-sm btn-secondary"
+                        onclick="revealPassword({{ e['id'] }})">
+                        👁️
+                    </button>
+
+                    <!-- Copy Credentials -->
+                    <button class="btn btn-sm btn-secondary"
+                            onclick="copyCredentials({{ e['id'] }})">
+                        📋 Copy
+                    </button>
+
+                    <!-- Delete -->
+                    <form method="post"
+                          action="{{ url_for('delete_entry', entry_id=e['id']) }}"
+                          onsubmit="return confirm('Delete this entry?');">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+{% else %}
+<div class="text-center text-muted">No passwords yet. Click “Add”.</div>
+{% endif %}
+
+<!-- 🚀 JAVASCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ==========================
+    // Sidebar Toggle
+    // ==========================
+    window.toggleMenu = function() {
+        const sidebar = document.getElementById("sidebar");
+        const hamburger = document.querySelector(".hamburger-btn");
+
+        sidebar.classList.toggle("open");
+        hamburger.classList.toggle("hide", sidebar.classList.contains("open"));
+    };
+
+    // ==========================
+    // Secure Password Reveal
+    // ==========================
+    window.revealPassword = function(id) {
+        const pwSpan = document.getElementById("pw-" + id);
+        const btn = document.getElementById("reveal-" + id);
+
+        // Hide again
+        if (pwSpan.dataset.revealed === "true") {
+            pwSpan.textContent = "••••••••";
+            pwSpan.dataset.revealed = "false";
+            btn.textContent = "👁️";
+            return;
+        }
+
+        // Fetch decrypted password
+        fetch(`/reveal/${id}`, { method: "POST" })
+        .then(r => r.json())
+        .then(data => {
+            if (data.password) {
+                pwSpan.textContent = data.password;
+                pwSpan.dataset.password = data.password;
+                pwSpan.dataset.revealed = "true";
+            btn.textContent = "👁️";
+                btn.textContent = "👁️";
+            }
+        });
+    };
+
+    // ==========================
+    // Copy Login + Password
+    // ==========================
+    window.copyCredentials = function(id) {
+        const login = document.getElementById("login-" + id).textContent;
+        const pwSpan = document.getElementById("pw-" + id);
+
+        if (!pwSpan.dataset.password) {
+            alert("Click the eye icon first to reveal the password.");
+            return;
+        }
+
+        const textToCopy = `Login: ${login}\nPassword: ${pwSpan.dataset.password}`;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            alert("Copied login & password!");
+        });
+    };
+
+});
+</script>
+
+{% endblock %}

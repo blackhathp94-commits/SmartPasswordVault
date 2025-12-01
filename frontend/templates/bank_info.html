@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- 🔥 HAMBURGER MENU + SIDEBAR -->
+<button class="hamburger-btn" onclick="toggleMenu()">☰</button>
+
+<div id="sidebar" class="sidebar">
+    <h5 class="text-white fw-bold mb-3">Menu</h5>
+
+    <a href="{{ url_for('vault') }}" class="menu-link">🔐 Password Vault</a>
+    <a href="{{ url_for('credit_cards') }}" class="menu-link">💳 Credit Cards</a>
+    <a href="{{ url_for('documents') }}" class="menu-link">📄 Documents</a>
+    <a href="{{ url_for('bank_info') }}" class="menu-link">🏦 Bank Information</a>
+
+    <hr class="text-light">
+    <button class="close-btn btn btn-danger btn-sm" onclick="toggleMenu()">Close</button>
+</div>
+
+<style>
+    /* Hamburger Button */
+    .hamburger-btn {
+        position: fixed;
+        top: 5px;
+        left: 5px;
+        z-index: 2000;
+        background: #0d6efd;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 20px;
+        border-radius: 4px;
+    }
+
+    .hamburger-btn.hide {
+        display: none;
+    }
+
+    /* Sidebar */
+    .sidebar {
+        height: 100%;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: -250px;
+        background-color: #1c1f24;
+        padding: 20px;
+        transition: left 0.3s ease;
+        z-index: 1500;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .menu-link {
+        display: block;
+        padding: 10px 0;
+        color: #d4d4d4;
+        text-decoration: none;
+    }
+
+    .menu-link:hover {
+        color: white;
+    }
+</style>
+
+<!-- PAGE HEADER -->
+<div class="d-flex justify-content-between align-items-center mt-4">
+    <h5 class="text-white fw-bold">🏦 Bank Information</h5>
+    <a class="btn btn-primary" href="{{ url_for('add_bank_info') }}">＋ Add</a>
+</div>
+
+<hr class="text-white">
+
+{% if banks %}
+<div class="table-responsive">
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th class="fw-bold text-dark">Bank Name</th>
+            <th class="fw-bold text-dark">IFSC</th>
+            <th class="fw-bold text-dark">Branch</th>
+            <th class="fw-bold text-dark">Note</th>
+            <th class="fw-bold text-dark">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b in banks %}
+        <tr>
+            <td>{{ b['bank_name'] }}</td>
+            <td>{{ b['ifsc'] }}</td>
+            <td>{{ b['branch'] }}</td>
+            <td>{{ b['note'] or '' }}</td>
+            <td>
+                <form method="post" action="{{ url_for('delete_bank_info', bank_id=b['id']) }}" onsubmit="return confirm('Delete bank info?');">
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p class="text-muted text-center mt-4">No bank details added yet.</p>
+{% endif %}
+
+<!-- 🚀 JAVASCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ==========================
+    // Sidebar Toggle
+    // ==========================
+    window.toggleMenu = function() {
+        const sidebar = document.getElementById("sidebar");
+        const hamburger = document.querySelector(".hamburger-btn");
+
+        sidebar.classList.toggle("open");
+        hamburger.classList.toggle("hide", sidebar.classList.contains("open"));
+    };
+
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<form method="post" class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label text-white fw-bold">Site / App</label>
+    <input name="site" class="form-control" placeholder=" " required>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label text-white fw-bold">Login</label>
+    <input name="login" class="form-control" placeholder=" " required>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label text-white fw-bold">Password</label>
+    <input type="password" name="password" class="form-control" required>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label text-white fw-bold">Note (optional)</label>
+    <input name="note" class="form-control" placeholder=" ">
+  </div>
+  <div class="col-12 d-flex justify-content-between">
+    <a class="btn btn-secondary" href="{{ url_for('vault') }}">Back</a>
+    <button class="btn btn-primary fw-bold">Save</button>
+  </div>
+</form>
+{% endblock %}

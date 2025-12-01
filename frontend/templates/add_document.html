@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h4 class="text-white fw-bold mb-3">Add Document</h4>
+
+<form method="POST" enctype="multipart/form-data">
+
+    <label class="form-label text-white">Document Title</label>
+    <input type="text" name="title" class="form-control" required>
+
+    <label class="form-label text-white mt-3">File</label>
+    <input type="file" name="file" class="form-control" required>
+
+    <label class="form-label text-white mt-3">Note</label>
+    <input type="text" name="note" class="form-control">
+
+    <button class="btn btn-primary mt-3 w-100">Upload</button>
+
+</form>
+
+{% endblock %}
